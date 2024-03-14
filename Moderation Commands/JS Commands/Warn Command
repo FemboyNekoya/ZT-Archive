@@ -1,0 +1,28 @@
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName, options } = interaction;
+
+    if (commandName === 'warn') {
+        if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+            return interaction.reply('You do not have permissions to warn');
+        }
+
+        const member = options.getMember('target');
+        const reason = options.getString('reason');
+
+        if (member) {
+            await member.send(`You have been warned for: ${reason}`);
+            await interaction.reply(`${member.user.tag} has been warned.`);
+        }
+    }
+});
+
+client.login('your-token-goes-here');
