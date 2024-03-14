@@ -1,0 +1,26 @@
+const { Client, Intents } = require('discord.js');
+const axios = require('axios');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName } = interaction;
+
+    if (commandName === 'hug') {
+        const response = await axios.get('https://nekos.life/api/v2/img/hug');
+        const hugGif = response.data;
+
+        if (hugGif) {
+            await interaction.reply(hugGif.url);
+        } else {
+            await interaction.reply('Could not fetch a hug GIF at this time.');
+        }
+    }
+});
+
+client.login('your-token-goes-here');
