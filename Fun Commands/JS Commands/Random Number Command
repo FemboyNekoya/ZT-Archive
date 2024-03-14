@@ -1,0 +1,19 @@
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName } = interaction;
+
+    if (commandName === 'random') {
+        const randomNumber = Math.floor(Math.random() * 1000) + 1;
+        await interaction.reply(`Your random number is: ${randomNumber}`);
+    }
+});
+
+client.login('your-token-goes-here');
