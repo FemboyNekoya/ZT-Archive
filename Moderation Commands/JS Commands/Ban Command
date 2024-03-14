@@ -1,0 +1,32 @@
+const { Client, Intents, MessageEmbed } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName, options } = interaction;
+
+    if (commandName === 'ban') {
+        if (!interaction.member.permissions.has('BAN_MEMBERS')) {
+            return interaction.reply('You do not have permissions to ban');
+        }
+
+        const member = options.getMember('target');
+
+        if (member) {
+            const embed = new MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle('Ban Command')
+                .setDescription(`${member.user.tag} was banned.`);
+
+            await member.ban();
+            await interaction.reply({ embeds: [embed] });
+        }
+    }
+});
+
+client.login('your-token-goes-here');
