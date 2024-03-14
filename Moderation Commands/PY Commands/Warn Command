@@ -1,0 +1,32 @@
+import discord
+from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice
+
+bot = commands.Bot(command_prefix='!')
+slash = SlashCommand(bot, sync_commands=True)
+
+guild_ids = ['your-guild-id']  # Replace with your Guild ID
+
+@slash.slash(name="warn",
+             description="Warn a member in the server.",
+             options=[
+               create_option(
+                 name="member",
+                 description="Who do you want to warn?",
+                 option_type=6,
+                 required=True
+               ),
+               create_option(
+                 name="reason",
+                 description="Why are you warning them?",
+                 option_type=3,
+                 required=True
+               )
+             ], guild_ids=guild_ids)
+@commands.has_permissions(kick_members=True)
+async def _warn(ctx: SlashContext, member: discord.Member, reason: str):
+    await member.send(f'You have been warned for: {reason}')
+    await ctx.send(f'{member} has been warned.')
+
+bot.run('your-token-goes-here')
