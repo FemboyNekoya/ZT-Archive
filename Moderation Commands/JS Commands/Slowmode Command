@@ -1,0 +1,27 @@
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName, options } = interaction;
+
+    if (commandName === 'slowmode') {
+        if (!interaction.member.permissions.has('MANAGE_CHANNELS')) {
+            return interaction.reply('You do not have permissions to set slowmode');
+        }
+
+        const duration = options.getInteger('duration');
+
+        if (duration) {
+            await interaction.channel.setRateLimitPerUser(duration);
+            await interaction.reply(`Slowmode has been set to ${duration} seconds.`);
+        }
+    }
+});
+
+client.login('your-token-goes-here');
