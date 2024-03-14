@@ -1,0 +1,27 @@
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName, options } = interaction;
+
+    if (commandName === 'clear') {
+        if (!interaction.member.permissions.has('MANAGE_MESSAGES')) {
+            return interaction.reply('You do not have permissions to clear messages');
+        }
+
+        const amount = options.getInteger('amount');
+
+        if (amount) {
+            await interaction.channel.bulkDelete(amount, true);
+            await interaction.reply(`Cleared ${amount} messages.`);
+        }
+    }
+});
+
+client.login('your-token-goes-here');
