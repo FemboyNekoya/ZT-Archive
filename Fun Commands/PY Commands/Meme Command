@@ -1,0 +1,23 @@
+import discord
+from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
+import requests
+
+bot = commands.Bot(command_prefix='!')
+slash = SlashCommand(bot, sync_commands=True)
+
+guild_ids = ['your-guild-id']  # Replace with your Guild ID
+
+@slash.slash(name="meme",
+             description="Send a random anime meme.",
+             guild_ids=guild_ids)
+async def _meme(ctx: SlashContext):
+    response = requests.get('https://api-url-for-anime-memes')  # Replace with your API URL
+    meme = response.json()
+
+    if meme:
+        await ctx.send(meme['url'])
+    else:
+        await ctx.send('Could not fetch a meme at this time.')
+
+bot.run('your-token-goes-here')
