@@ -1,0 +1,33 @@
+const { Client, Intents } = require('discord.js');
+const ytdl = require('ytdl-core');
+const client = new Client({ intents: [Intents.FLAGS.Guilds, Intents.FLAGS.GuildVoiceStates] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName, options } = interaction;
+
+    if (commandName === 'play') {
+        const url = options.getString('url');
+        const voiceChannel = interaction.member.voice.channel;
+
+        if (voiceChannel) {
+            const connection = await voiceChannel.join();
+            const stream = ytdl(url, { filter: 'audioonly' });
+            connection.play(stream, { seek: 0, volume: 1 })
+                .on('finish', () => {
+                    voiceChannel.leave();
+                });
+
+            await interaction.reply('Playing your song now!');
+        } else {
+            await interaction.reply('You need to join a voice channel first!');
+        }
+    }
+});
+
+client.login('your-token-goes-here');
