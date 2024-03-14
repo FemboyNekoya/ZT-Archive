@@ -1,0 +1,32 @@
+const { Client, Intents, MessageEmbed } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.Guilds] });
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName, options } = interaction;
+
+    if (commandName === 'kick') {
+        if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+            return interaction.reply('You do not have permissions to kick');
+        }
+
+        const member = options.getMember('target');
+
+        if (member) {
+            const embed = new MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle('Kick Command')
+                .setDescription(`${member.user.tag} was kicked.`);
+
+            await member.kick();
+            await interaction.reply({ embeds: [embed] });
+        }
+    }
+});
+
+client.login('your-token-goes-here');
