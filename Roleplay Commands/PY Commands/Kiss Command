@@ -1,0 +1,23 @@
+import discord
+from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
+import requests
+
+bot = commands.Bot(command_prefix='!')
+slash = SlashCommand(bot, sync_commands=True)
+
+guild_ids = ['your-guild-id']  # Replace with your Guild ID
+
+@slash.slash(name="kiss",
+             description="Send a random kiss GIF.",
+             guild_ids=guild_ids)
+async def _kiss(ctx: SlashContext):
+    response = requests.get('https://nekos.life/api/v2/img/kiss')
+    kissGif = response.json()
+
+    if kissGif:
+        await ctx.send(kissGif['url'])
+    else:
+        await ctx.send('Could not fetch a kiss GIF at this time.')
+
+bot.run('your-token-goes-here')
